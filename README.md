@@ -102,7 +102,9 @@ Define la estructura visual:
 
 ### 2. `style.css`
 
-Aporta el aspecto visual con estética _dark / retro arcade_: fondo oscuro, tipografía monoespaciada para los marcadores y _backdrop blur_ en los overlays.
+Aporta el aspecto visual con estética _retro arcade_: tipografía monoespaciada para los marcadores y _backdrop blur_ en los overlays. Todos los colores son variables CSS: `:root` define el **tema oscuro** (predeterminado) y `[data-theme="light"]` sobrescribe la paleta del **tema claro**.
+
+El botón **Tema claro / Tema oscuro** junto al título cambia entre ambos temas (es un `role="switch"` accesible con teclado). La preferencia se guarda en `localStorage` (`tetris-theme`). `game.js` lee de las variables CSS los colores que pinta el canvas (cuadrícula, brillo y borde de bloques, opacidad del ghost) y repinta al cambiar de tema, también en pausa o game over.
 
 ### 3. `game.js`
 
@@ -116,7 +118,7 @@ Contiene toda la lógica del juego. A grandes rasgos:
 - **Limpieza de líneas** (`clearLines`): recorre el tablero de abajo hacia arriba; cada fila completa se elimina y se inserta una vacía en la cima.
 - **Puntuación**: usa la tabla clásica `[0, 100, 300, 500, 800]` multiplicada por el nivel actual; el hard drop suma 2 puntos por celda recorrida y el soft drop 1 punto por fila.
 - **Nivel y velocidad**: el nivel sube cada 10 líneas; la velocidad de caída se calcula como `max(100, 1000 − (level − 1) × 90)` milisegundos.
-- **Ghost piece** (`ghostY`): proyecta la posición final de la pieza actual hacia abajo y la dibuja con `globalAlpha = 0.2`.
+- **Ghost piece** (`ghostY`): proyecta la posición final de la pieza actual hacia abajo y la dibuja con la opacidad del tema (`--ghost-alpha`: 0.2 en oscuro, 0.4 en claro).
 
 ### Flujo del juego
 
@@ -143,7 +145,7 @@ Cuando una pieza recién generada ya colisiona al aparecer (`spawn`), se dispara
 ## Tecnologías
 
 - **HTML5** — marcado y dos elementos `<canvas>` (tablero y vista previa).
-- **CSS3** — _flexbox_, variables de color, `backdrop-filter` y `box-shadow`.
+- **CSS3** — _flexbox_, variables de color (temas claro y oscuro), `backdrop-filter` y `box-shadow`.
 - **JavaScript (ES6+) vanilla** — `const`/`let`, _arrow functions_, _spread operator_, `Array.from`, _template literals_…
 - **Canvas 2D API** — para todo el renderizado del juego.
 - **`requestAnimationFrame`** — para el bucle de juego sincronizado con el navegador.
@@ -157,7 +159,7 @@ Cuando una pieza recién generada ya colisiona al aparecer (`spawn`), se dispara
 ```
 03-tetris/
 ├── index.html      # Estructura del DOM y canvas
-├── style.css       # Estilos del juego (dark theme)
+├── style.css       # Estilos del juego (temas oscuro y claro)
 ├── game.js         # Toda la lógica del Tetris (~300 líneas)
 └── README.md
 ```

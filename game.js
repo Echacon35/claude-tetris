@@ -39,6 +39,10 @@ const overlay = document.getElementById('overlay');
 const overlayTitle = document.getElementById('overlay-title');
 const overlayScore = document.getElementById('overlay-score');
 const restartBtn = document.getElementById('restart-btn');
+const themeToggle = document.getElementById('theme-toggle');
+
+const THEME_KEY = 'tetris-theme';
+let theme = { grid: '#22222e', highlight: 'rgba(255,255,255,0.12)', edge: 'transparent', ghostAlpha: 0.2 };
 
 let board, current, next, score, lines, level, paused, gameOver, lastTime, dropAccum, dropInterval, animId;
 
@@ -163,13 +167,16 @@ function drawBlock(context, x, y, colorIndex, size, alpha) {
   context.fillStyle = color;
   context.fillRect(x * size + 1, y * size + 1, size - 2, size - 2);
   // highlight
-  context.fillStyle = 'rgba(255,255,255,0.12)';
+  context.fillStyle = theme.highlight;
   context.fillRect(x * size + 1, y * size + 1, size - 2, 4);
+  context.strokeStyle = theme.edge;
+  context.lineWidth = 1;
+  context.strokeRect(x * size + 1.5, y * size + 1.5, size - 3, size - 3);
   context.globalAlpha = 1;
 }
 
 function drawGrid() {
-  ctx.strokeStyle = '#22222e';
+  ctx.strokeStyle = theme.grid;
   ctx.lineWidth = 0.5;
   for (let c = 1; c < COLS; c++) {
     ctx.beginPath();
@@ -199,7 +206,7 @@ function draw() {
   for (let r = 0; r < current.shape.length; r++)
     for (let c = 0; c < current.shape[r].length; c++)
       if (current.shape[r][c])
-        drawBlock(ctx, current.x + c, gy + r, current.shape[r][c], BLOCK, 0.2);
+        drawBlock(ctx, current.x + c, gy + r, current.shape[r][c], BLOCK, theme.ghostAlpha);
 
   // current piece
   for (let r = 0; r < current.shape.length; r++)
@@ -216,6 +223,26 @@ function drawNext() {
   for (let r = 0; r < shape.length; r++)
     for (let c = 0; c < shape[r].length; c++)
       drawBlock(nextCtx, offX + c, offY + r, shape[r][c], NB);
+}
+
+function applyTheme(name) {
+  const light = name === 'light';
+  if (light) document.documentElement.setAttribute('data-theme', 'light');
+  else document.documentElement.removeAttribute('data-theme');
+  themeToggle.setAttribute('aria-checked', String(light));
+  themeToggle.textContent = light ? 'Tema oscuro' : 'Tema claro';
+  const css = getComputedStyle(document.documentElement);
+  theme = {
+    grid: css.getPropertyValue('--grid').trim(),
+    highlight: css.getPropertyValue('--block-highlight').trim(),
+    edge: css.getPropertyValue('--block-edge').trim(),
+    ghostAlpha: parseFloat(css.getPropertyValue('--ghost-alpha')),
+  };
+  // el loop no corre en pausa ni en game over: repintar a mano
+  if (current && next) {
+    draw();
+    drawNext();
+  }
 }
 
 function endGame() {
@@ -300,5 +327,16 @@ document.addEventListener('keydown', e => {
 });
 
 restartBtn.addEventListener('click', init);
+
+themeToggle.addEventListener('click', () => {
+  const name = document.documentElement.hasAttribute('data-theme') ? 'dark' : 'light';
+  try { localStorage.setItem(THEME_KEY, name); } catch (e) {}
+  applyTheme(name);
+  themeToggle.blur(); // que Space/Enter no vuelvan a activar el botón
+});
+
+let savedTheme = null;
+try { savedTheme = localStorage.getItem(THEME_KEY); } catch (e) {}
+applyTheme(savedTheme);
 
 init();
