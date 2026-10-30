@@ -65,6 +65,12 @@ jobs:
             - criterios_de_aceptacion: comprobaciones concretas para dar el trabajo por terminado.
             - preguntas_abiertas: lo que falta aclarar. No puedes ver imágenes adjuntas: si el cuerpo
               incluye alguna, indica aquí que no la revisaste. Déjalo vacío si no falta nada.
+
+            Redacta el texto de los campos en Markdown compatible con GitHub (GFM), porque se
+            publicará tal cual en un comentario del issue. Usa `código` para archivos, funciones y
+            variables, y bloques de código con lenguaje para fragmentos. No uses encabezados: el
+            comentario ya los incluye. En los campos que son listas, escribe cada elemento en una
+            sola línea y sin viñeta inicial, porque el comentario ya añade la viñeta.
           claude_args: >-
             --model claude-opus-5-5
             --allowedTools "Read,Glob,Grep"
