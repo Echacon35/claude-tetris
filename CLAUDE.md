@@ -16,7 +16,7 @@ Changes can only be verified by running the game in a browser.
 
 `index.html` loads `game.js` as a classic script (not a module). All game logic lives in that one file, as top-level functions sharing mutable module-level state (`board`, `current`, `next`, `score`, `paused`, `gameOver`, ...). `init()` resets that state and also serves as the restart handler.
 
-- **Cell values:** the piece type (1–7) is both the index into `PIECES` and `COLORS` and the value stored in shape matrices and `board` cells; `0` means empty. Adding or reordering pieces means keeping both arrays aligned, and the matrix values must match the piece's index. `randomPiece()` also hardcodes the count of 7.
+- **Cell values:** the piece type (1–8) is both the index into `PIECES` and `COLORS` and the value stored in shape matrices and `board` cells; `0` means empty. Adding or reordering pieces means keeping both arrays aligned, and the matrix values must match the piece's index. `randomPiece()` also hardcodes the count of 8.
 - **Locking sequence:** gravity (`loop`), `softDrop`, and `hardDrop` all end in `lockPiece()`, which runs `merge()` → `clearLines()` → `spawn()`. Game over is detected only in `spawn()`, when a new piece collides immediately.
 - **Rendering:** `draw()` repaints the whole board canvas every frame from state, so input handlers only mutate state. The next-piece preview is different: `drawNext()` runs only from `spawn()`.
 - **HUD:** DOM counters update only through `updateHUD()`. `hardDrop()` doesn't call it and relies on the `keydown` handler calling it after every action.
