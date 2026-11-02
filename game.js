@@ -561,6 +561,8 @@ function loop(ts) {
     }
   }
   draw();
+  // endGame() puede ocurrir dentro de este frame; su cancelAnimationFrame no detiene el siguiente
+  if (gameOver) return;
   animId = requestAnimationFrame(loop);
 }
 
@@ -836,7 +838,7 @@ function renderRecords(container, data, highlight) {
 
 // Al terminar la partida: guarda marcas y, si entra en el top, la fila con el nombre por defecto
 // (así no se pierde si se reinicia o se cierra sin pulsar Guardar). Guardar solo la renombra.
-// endGame() puede llamarse varias veces por partida (el loop sigue corriendo), de ahí recordsHandled.
+// recordsHandled asegura una sola ejecución por partida aunque endGame() se llamara de nuevo.
 function finishRecords() {
   if (recordsHandled) return;
   recordsHandled = true;
